@@ -27,6 +27,7 @@ clock = pygame.time.Clock()
 frameRate = 15
 
 fontStyle = pygame.font.SysFont(None, 30)
+scoreFont = pygame.font.SysFont("comicsansms", 35)
 
 # draws snake
 def mySnake(snake_Block, snake_List):
@@ -39,6 +40,10 @@ def message(msg, color):
     msgWidth = m.get_rect().width
     msgHeight = m.get_rect().height
     window.blit(m, [window_width/2 - msgWidth/2, window_height/2])
+
+def displayScore(score):
+    value = scoreFont.render("Your Score: " + str(score), True, white)
+    window.blit(value, [0, 0])
 
 def gameLoop():
     run = True
@@ -64,7 +69,8 @@ def gameLoop():
 
         while gameClosed == True:
             window.fill(black)
-            message("Game Over! Press Q-Quit or P-Play Again", red)
+            message("Game Over! Press Q-Quit or P-Play Again", white)
+            displayScore(snakeLen - 1)
             pygame.display.update()
 
             for event in pygame.event.get():
