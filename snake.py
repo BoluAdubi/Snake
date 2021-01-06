@@ -1,8 +1,10 @@
 import pygame 
 import time
+import random
 
 pygame.init()
 
+# rgb color variables
 black = (0, 0, 0)
 blue = (0, 0, 255)
 white = (255, 255, 255)
@@ -14,15 +16,8 @@ window_height = 400
 window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Snake")
 
-#snake position
-x = window_width/2
-y = window_height/2
-
+# snake size
 snakeBlock = 20
-
-# snake speed in each direction
-xVel = 0
-yVel = 0
 
 clock = pygame.time.Clock()
 frameRate = 30
@@ -36,50 +31,66 @@ def message(msg, color):
     msgHeight = m.get_rect().height
     window.blit(m, [window_width/2 - msgWidth/2, window_height/2])
 
-run = True
-userEnd = False
+def gameLoop():
+    run = True
+    gameClosed = False
 
-while run and not userEnd:        
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            userEnd = True
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                xVel = -snakeBlock * 0.4
-                yVel = 0
-            elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                xVel = snakeBlock * 0.4
-                yVel = 0
-            elif event.key == pygame.K_w or event.key == pygame.K_UP:
-                yVel = -snakeBlock * 0.4
-                xVel = 0
-            elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                yVel = snakeBlock * 0.4
-                xVel = 0
+    # snake position
+    x = window_width/2
+    y = window_height/2
 
-    # stops game if snake hits wall
-    if(x >= window_width - snakeBlock or x < 0 or y > window_height - snakeBlock or y < 0):
-        run = False
+    # snake speed in each direction
+    xVel = 0
+    yVel = 0
 
-    # keeps snake moving in one direction until a key is pressed
-    x += xVel
-    y += yVel
+    # food position
+    foodx = round(random.randrange(0, window_width - snakeBlock) * 0.1)
+    foody = round(random.randrange(0, window_height - snakeBlock) * 0.1)
 
-    window.fill(black)
-    pygame.draw.rect(window, blue, [x, y, snakeBlock, snakeBlock])
+    while run and not gameClosed:        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                gameClosed = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                    xVel = -snakeBlock * 0.4
+                    yVel = 0
+                elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                    xVel = snakeBlock * 0.4
+                    yVel = 0
+                elif event.key == pygame.K_w or event.key == pygame.K_UP:
+                    yVel = -snakeBlock * 0.4
+                    xVel = 0
+                elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                    yVel = snakeBlock * 0.4
+                    xVel = 0
 
-    pygame.display.update()
+        # stops game if snake hits wall
+        if(x >= window_width - snakeBlock or x < 0 or y > window_height - snakeBlock or y < 0):
+            run = False
 
-    clock.tick(frameRate)
+        # keeps snake moving in one direction until a key is pressed
+        x += xVel
+        y += yVel
 
-if run == False:
-    message("Game Over", red)
-    pygame.display.update()
-    time.sleep(2)
-elif userEnd == True:
-    message("Exiting...", red)
-    pygame.display.update()
-    time.sleep(2)
+        window.fill(black)
+        pygame.draw.rect(window, blue, [x, y, snakeBlock, snakeBlock]) # draws snake
+        pygame.draw.rect(window, white, [foodx, foody, snakeBlock, snakeBlock]) # draws food
 
-pygame.quit()
-quit()
+        pygame.display.update()
+
+        clock.tick(frameRate)
+
+    if run == False:
+        message("Game Over", red)
+        pygame.display.update()
+        time.sleep(2)
+    elif gameClosed == True:
+        message("Exiting...", red)
+        pygame.display.update()
+        time.sleep(2)
+
+    pygame.quit()
+    quit()
+
+gameLoop()
