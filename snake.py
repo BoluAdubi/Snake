@@ -11,8 +11,8 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 
 # display setup
-window_width = 400
-window_height = 400
+window_width = 450
+window_height = 450
 window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Snake")
 
@@ -22,7 +22,7 @@ snakeBlock = 20
 clock = pygame.time.Clock()
 frameRate = 30
 
-fontStyle = pygame.font.SysFont(None, 50)
+fontStyle = pygame.font.SysFont(None, 30)
 
 # function to display a center aligned message in a given color
 def message(msg, color):
@@ -47,7 +47,21 @@ def gameLoop():
     foodx = round(random.randrange(0, window_width - snakeBlock) * 0.1)
     foody = round(random.randrange(0, window_height - snakeBlock) * 0.1)
 
-    while run and not gameClosed:        
+    while run:   
+
+        while gameClosed == True:
+            window.fill(black)
+            message("Game Over! Press Q-Quit or P-Play Again", red)
+            pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        run = False
+                        gameClosed = False
+                    if event.key == pygame.K_p:
+                        gameLoop()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameClosed = True
@@ -67,7 +81,7 @@ def gameLoop():
 
         # stops game if snake hits wall
         if(x >= window_width - snakeBlock or x < 0 or y > window_height - snakeBlock or y < 0):
-            run = False
+            gameClosed = True
 
         # keeps snake moving in one direction until a key is pressed
         x += xVel
@@ -80,15 +94,6 @@ def gameLoop():
         pygame.display.update()
 
         clock.tick(frameRate)
-
-    if run == False:
-        message("Game Over", red)
-        pygame.display.update()
-        time.sleep(2)
-    elif gameClosed == True:
-        message("Exiting...", red)
-        pygame.display.update()
-        time.sleep(2)
 
     pygame.quit()
     quit()
