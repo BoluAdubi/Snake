@@ -11,18 +11,27 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 
 # display setup
-window_width = 450
-window_height = 450
+window_width = 600
+window_height = 400
 window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Snake")
 
 # snake size
-snakeBlock = 20
+snakeBlock = 10
+
+# snake food init
+foodx = 0
+foody = 0
 
 clock = pygame.time.Clock()
-frameRate = 30
+frameRate = 15
 
 fontStyle = pygame.font.SysFont(None, 30)
+
+# draws snake
+def mySnake(snake_Block, snake_List):
+    for i in snake_List:
+        pygame.draw.rect(window, blue, [i[0], i[1], snake_Block, snake_Block]) # draws snake
 
 # function to display a center aligned message in a given color
 def message(msg, color):
@@ -43,9 +52,13 @@ def gameLoop():
     xVel = 0
     yVel = 0
 
-    # food position
-    foodx = round(random.randrange(0, window_width - snakeBlock) * 0.1)
-    foody = round(random.randrange(0, window_height - snakeBlock) * 0.1)
+    #
+    snakeList = []
+    snakeLen = 1
+
+    # random food postition
+    foodx = round(random.randrange(0, window_width - snakeBlock) / 10) * 10
+    foody = round(random.randrange(0, window_height - snakeBlock) / 10) * 10
 
     while run:   
 
@@ -67,20 +80,20 @@ def gameLoop():
                 gameClosed = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                    xVel = -snakeBlock * 0.4
+                    xVel = -snakeBlock
                     yVel = 0
                 elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                    xVel = snakeBlock * 0.4
+                    xVel = snakeBlock
                     yVel = 0
                 elif event.key == pygame.K_w or event.key == pygame.K_UP:
-                    yVel = -snakeBlock * 0.4
+                    yVel = -snakeBlock
                     xVel = 0
                 elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                    yVel = snakeBlock * 0.4
+                    yVel = snakeBlock
                     xVel = 0
 
         # stops game if snake hits wall
-        if(x >= window_width - snakeBlock or x < 0 or y > window_height - snakeBlock or y < 0):
+        if(x >= window_width or x < 0 or y > window_height or y < 0):
             gameClosed = True
 
         # keeps snake moving in one direction until a key is pressed
@@ -88,10 +101,30 @@ def gameLoop():
         y += yVel
 
         window.fill(black)
-        pygame.draw.rect(window, blue, [x, y, snakeBlock, snakeBlock]) # draws snake
         pygame.draw.rect(window, white, [foodx, foody, snakeBlock, snakeBlock]) # draws food
 
+        snakeHead = []
+        snakeHead.append(x)
+        snakeHead.append(y)
+        snakeList.append(snakeHead)
+
+        # deletes snake as it moves
+        if len(snakeList) > snakeLen:
+            del snakeList[0]
+
+        # ends game if snake runs into itself
+        for i in snakeList[:-1]:
+            if i == snakeHead:
+                gameClosed = True
+
+        mySnake(snakeBlock, snakeList)
+
         pygame.display.update()
+
+        if x == foodx and y == foody:
+            foodx = round(random.randrange(0, (window_width - snakeBlock)) / 10) * 10
+            foody = round(random.randrange(0, (window_height - snakeBlock)) / 10) * 10
+            snakeLen += 1
 
         clock.tick(frameRate)
 
